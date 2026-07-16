@@ -4,6 +4,8 @@ import '../../domain/models/app_settings.dart';
 import '../../domain/models/category.dart';
 import '../../domain/models/expense.dart';
 import '../../domain/models/savings.dart';
+import '../../domain/models/special_event.dart';
+import '../../domain/models/special_event_expense.dart';
 
 class HomeRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -492,5 +494,90 @@ class HomeRepository {
       total += (doc.data()['amount'] as num).toDouble();
     }
     return total;
+  }
+
+  // ── Special Events ──────────────────────────────────────────────────
+
+  Stream<List<SpecialEvent>> getSpecialEvents(String userId) {
+    return _firestore
+        .collection('special_events')
+        .where('userId', isEqualTo: userId)
+        .snapshots()
+        .map((snap) {
+      final list = snap.docs
+          .map((d) => SpecialEvent.fromMap(d.data(), d.id))
+          .toList();
+      list.sort((a, b) => b.startDate.compareTo(a.startDate));
+      return list;
+    });
+  }
+
+  Future<String> addSpecialEvent(SpecialEvent event) async {
+    final ref = await _firestore.collection('special_events').add(event.toMap());
+    return ref.id;
+  }
+
+  Future<void> updateSpecialEvent(String eventId, Map<String, dynamic> data) async {
+    await _firestore.collection('special_events').doc(eventId).update(data);
+  }
+
+  Future<void> deleteSpecialEvent(String eventId) async {
+    // Delete all sub-expenses first
+    final expSnap = await _firestore
+        .collection('special_events')
+        .doc(eventId)
+        .collection('expenses')
+        .get();
+    final batch = _firestore.batch();
+    for (final doc in expSnap.docs) {
+      batch.delete(doc.reference);
+    }
+    batch.delete(_firestore.collection('special_events').doc(eventId));
+    await batch.commit();
+  }
+
+  // ── Special Event Expenses (sub-collection) ─────────────────────────
+
+  Stream<List<SpecialEventExpense>> getSpecialEventExpenses(String eventId) {
+    return _firestore
+        .collection('special_events')
+        .doc(eventId)
+        .collection('expenses')
+        .snapshots()
+        .map((snap) {
+      final list = snap.docs
+          .map((d) => SpecialEventExpense.fromMap(d.data(), d.id))
+          .toList();
+      list.sort((a, b) => b.date.compareTo(a.date));
+      return list;
+    });
+  }
+
+  Future<String> addSpecialEventExpense(SpecialEventExpense expense) async {
+    final ref = await _firestore
+        .collection('special_events')
+        .doc(expense.eventId)
+        .collection('expenses')
+        .add(expense.toMap());
+    return ref.id;
+  }
+
+  Future<void> updateSpecialEventExpense(
+      String eventId, String expenseId, Map<String, dynamic> data) async {
+    await _firestore
+        .collection('special_events')
+        .doc(eventId)
+        .collection('expenses')
+        .doc(expenseId)
+        .update(data);
+  }
+
+  Future<void> deleteSpecialEventExpense(String eventId, String expenseId) async {
+    await _firestore
+        .collection('special_events')
+        .doc(eventId)
+        .collection('expenses')
+        .doc(expenseId)
+        .delete();
   }
 }

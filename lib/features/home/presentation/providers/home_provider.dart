@@ -1,10 +1,13 @@
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../../domain/models/user_profile.dart';
 import '../../domain/models/app_settings.dart';
 import '../../domain/models/category.dart';
 import '../../domain/models/expense.dart';
 import '../../domain/models/savings.dart';
+import '../../domain/models/special_event.dart';
+import '../../domain/models/special_event_expense.dart';
 import '../../data/repositories/home_repository.dart';
 
 class HomeProvider with ChangeNotifier {
@@ -256,6 +259,90 @@ class HomeProvider with ChangeNotifier {
 
   Future<double> getTotalSavings() async {
     return await _repository.getTotalSavings();
+  }
+
+  // ── Special Events ──────────────────────────────────────────────────
+
+  Stream<List<SpecialEvent>> getSpecialEvents() {
+    if (_userId == null) return const Stream.empty();
+    return _repository.getSpecialEvents(_userId!);
+  }
+
+  Future<String> addSpecialEvent({
+    required String title,
+    required DateTime startDate,
+    required DateTime endDate,
+    required double budget,
+  }) async {
+    if (_userId == null) throw Exception('User not logged in');
+    final event = SpecialEvent(
+      id: '',
+      userId: _userId!,
+      title: title,
+      startDate: startDate,
+      endDate: endDate,
+      budget: budget,
+    );
+    return await _repository.addSpecialEvent(event);
+  }
+
+  Future<void> updateSpecialEvent(String eventId, {
+    required String title,
+    required DateTime startDate,
+    required DateTime endDate,
+    required double budget,
+  }) async {
+    await _repository.updateSpecialEvent(eventId, {
+      'title': title,
+      'startDate': Timestamp.fromDate(startDate),
+      'endDate': Timestamp.fromDate(endDate),
+      'budget': budget,
+    });
+  }
+
+  Future<void> deleteSpecialEvent(String eventId) async {
+    await _repository.deleteSpecialEvent(eventId);
+  }
+
+  // ── Special Event Expenses ──────────────────────────────────────────
+
+  Stream<List<SpecialEventExpense>> getSpecialEventExpenses(String eventId) {
+    return _repository.getSpecialEventExpenses(eventId);
+  }
+
+  Future<String> addSpecialEventExpense({
+    required String eventId,
+    required String title,
+    required double amount,
+    required DateTime date,
+  }) async {
+    if (_userId == null) throw Exception('User not logged in');
+    final expense = SpecialEventExpense(
+      id: '',
+      eventId: eventId,
+      userId: _userId!,
+      title: title,
+      amount: amount,
+      date: date,
+    );
+    return await _repository.addSpecialEventExpense(expense);
+  }
+
+  Future<void> updateSpecialEventExpense(
+      String eventId, String expenseId, {
+    required String title,
+    required double amount,
+    required DateTime date,
+  }) async {
+    await _repository.updateSpecialEventExpense(eventId, expenseId, {
+      'title': title,
+      'amount': amount,
+      'date': Timestamp.fromDate(date),
+    });
+  }
+
+  Future<void> deleteSpecialEventExpense(String eventId, String expenseId) async {
+    await _repository.deleteSpecialEventExpense(eventId, expenseId);
   }
 
   @override

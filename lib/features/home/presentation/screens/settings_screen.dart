@@ -8,6 +8,7 @@ import '../providers/home_provider.dart';
 import '../providers/settings_provider.dart';
 import '../../../../services/pdf_service.dart';
 import 'categories_screen.dart';
+import 'special_events_screen.dart';
 import '../../../../core/utils/toast_utils.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -167,7 +168,11 @@ class SettingsScreen extends StatelessWidget {
         subtitle: const Text('Manage special events'),
         trailing: const Icon(Icons.chevron_right),
         onTap: () {
-          ToastUtils.showInfo(context, 'Special Events coming soon!');
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => const SpecialEventsScreen(),
+            ),
+          );
         },
       ),
     );

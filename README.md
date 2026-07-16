@@ -24,3 +24,7 @@ settings page eke new card ekak create karanna special events kiyala eke create 
 2- new page eke udinma card ekaka all events amount kiyala label ekaka amount eka show karanna. ita yatin add karana new events tika title ,date and amount ekka show karanna edit delete button add karana with functionality. e page eke bottom walin floatin action button ekak add karanna + button eka click karama popup form eka eke title, select date range, amount add karanna denna.
 
 3- add karana new event ekak click karana e event eka ethulata yanna puluwn wenna one. new page ekakin open wenna ona. eke udinma card ekaka Up to now total Amount kiyala amount eka show wenna ona. eta yatina card wala amount tika add karanna puluwn wenna ona. e card walath edit delete button ona. page eke bottom walin + floatin action button ekak ona eka click karama form ekak open wenna ona title, date, amount add karanna denna. e page eke edit delete button ona and button eka click karama edit and delete functionality ona.
+
+
+
+Open [https://github.com/login/device](https://github.com/login/device) in a new tab and paste your one-time code: F80B-EA2F
