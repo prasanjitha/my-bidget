@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import '../../../../services/auth_service.dart';
 import '../../../../services/session_service.dart';
+import '../../../../core/constants/app_constants.dart';
 
 /// State management for authentication
 /// Uses Provider pattern for state management
@@ -143,6 +144,38 @@ class AuthProvider with ChangeNotifier {
   /// Check biometric availability
   Future<BiometricCheckResult> checkBiometricAvailability() async {
     return await _authService.checkBiometricAvailability();
+  }
+
+  /// Authenticate via PIN (fallback for devices without biometric support)
+  Future<void> authenticateWithPin() async {
+    _setLoading(true);
+    _clearError();
+    try {
+      // Get or generate userId from persistent storage
+      String? uid = await _authService.getCurrentUserId();
+      if (uid == null || uid.isEmpty) {
+        // First time - create a userId
+        final prefs = await _authService.getPrefs();
+        uid = DateTime.now().millisecondsSinceEpoch.toString();
+        await prefs.setString(AppConstants.keyUserId, uid);
+        await prefs.setBool(AppConstants.keyIsFirstLaunch, false);
+        await prefs.setBool(AppConstants.keyIsAuthenticated, true);
+      } else {
+        final prefs = await _authService.getPrefs();
+        await prefs.setBool(AppConstants.keyIsAuthenticated, true);
+      }
+      _userId = uid;
+      _failedAttempts = 0;
+      _isLockedOut = false;
+      _remainingLockoutSeconds = null;
+      _setState(AuthState.authenticated);
+      _sessionService.markReauthenticationComplete();
+    } catch (e) {
+      _setError('PIN authentication error: ${e.toString()}');
+      _setState(AuthState.authenticationFailed);
+    } finally {
+      _setLoading(false);
+    }
   }
 
   /// Retry authentication after lockout

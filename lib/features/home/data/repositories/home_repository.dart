@@ -498,10 +498,9 @@ class HomeRepository {
 
   // ── Special Events ──────────────────────────────────────────────────
 
-  Stream<List<SpecialEvent>> getSpecialEvents(String userId) {
+  Stream<List<SpecialEvent>> getSpecialEvents() {
     return _firestore
         .collection('special_events')
-        .where('userId', isEqualTo: userId)
         .snapshots()
         .map((snap) {
       final list = snap.docs

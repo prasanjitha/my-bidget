@@ -264,8 +264,7 @@ class HomeProvider with ChangeNotifier {
   // ── Special Events ──────────────────────────────────────────────────
 
   Stream<List<SpecialEvent>> getSpecialEvents() {
-    if (_userId == null) return const Stream.empty();
-    return _repository.getSpecialEvents(_userId!);
+    return _repository.getSpecialEvents();
   }
 
   Future<String> addSpecialEvent({

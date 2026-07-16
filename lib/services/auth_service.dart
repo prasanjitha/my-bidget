@@ -234,6 +234,11 @@ class AuthService {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(AppConstants.keyUserId);
   }
+
+  /// Helper to access SharedPreferences (for PIN fallback auth)
+  Future<SharedPreferences> getPrefs() async {
+    return await SharedPreferences.getInstance();
+  }
 }
 
 /// Result of biometric availability check

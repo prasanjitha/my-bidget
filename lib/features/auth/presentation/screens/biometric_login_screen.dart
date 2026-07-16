@@ -92,23 +92,15 @@ class _BiometricLoginScreenState extends State<BiometricLoginScreen> {
 
   void _handlePinSubmit(BuildContext dialogContext, String enteredPin) async {
     if (enteredPin == '2036') {
-      // Correct PIN - close dialog and authenticate via AuthService
+      // Correct PIN - close dialog and authenticate directly
       Navigator.of(dialogContext).pop();
-
       final authProvider = context.read<AuthProvider>();
-
-      // If first time, enroll the user
-      if (authProvider.state == AuthState.needsEnrollment) {
-        await authProvider.enrollUser();
-      } else {
-        // Mark as authenticated (bypass biometric for devices without support)
-        await authProvider.authenticateWithBiometrics();
-      }
+      await authProvider.authenticateWithPin();
     } else {
       // Wrong PIN - show error
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Incorrect PIN. Try 2036'),
+          content: Text('Incorrect PIN. Please try again.'),
           backgroundColor: Colors.red,
           duration: Duration(seconds: 2),
         ),
@@ -402,6 +394,24 @@ class _BiometricLoginScreenState extends State<BiometricLoginScreen> {
                     ),
                   ),
                   child: const Text('Try Again'),
+                ),
+                const SizedBox(height: 16),
+                // PIN fallback — always visible on error state
+                OutlinedButton.icon(
+                  onPressed: () => _showPinDialog(context),
+                  icon: const Icon(Icons.pin, color: Colors.white),
+                  label: const Text(
+                    'Enter PIN',
+                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: Colors.white70),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 32, vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
                 ),
               ],
             ),
