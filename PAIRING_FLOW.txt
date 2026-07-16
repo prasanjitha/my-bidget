@@ -1,0 +1,179 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                         DEVICE PAIRING FLOW DIAGRAM                          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  DEVICE A (Primary) - First Time                                            │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+    [Open App]
+        ↓
+    [Fingerprint Enrollment Screen]
+        ↓
+    👆 Tap "Enroll"
+        ↓
+    [Fingerprint Scan]
+        ↓
+    ✅ Generate userId: 1784098728075
+    ✅ Save to SharedPreferences
+        ↓
+    [Main App Screen]
+        ↓
+    Add budget data:
+    • Monthly Allocation: RS 170,000
+    • Category: "Food"
+    • Expense: RS 5,000
+        ↓
+    [Settings] → [Pair New Device]
+        ↓
+    [QR Code Display]
+    ┌──────────────┐
+    │  ████ ██  ██ │
+    │  ██ ████  ██ │  ← Contains: "1784098728075"
+    │  ██  ████ ██ │
+    └──────────────┘
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  DEVICE B (Secondary) - Pairing                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+    [Install & Open App]
+        ↓
+    [Fingerprint Enrollment Screen]
+        ↓
+    👆 Tap "Pair with existing device"
+        ↓
+    [Camera Permission Request]
+        ↓
+    ✅ Allow Camera
+        ↓
+    [QR Scanner Screen]
+        ↓
+    📷 Point at Device A's QR code
+        ↓
+    Scan successful: "1784098728075"
+        ↓
+    ✅ Validate userId format
+    ✅ Save userId to SharedPreferences
+    ✅ Mark as paired device
+        ↓
+    [Fingerprint Enrollment]
+        ↓
+    👆 Set up fingerprint
+        ↓
+    [Main App Screen]
+        ↓
+    ✅ Shows same data as Device A:
+    • Monthly Allocation: RS 170,000
+    • Category: "Food"
+    • Expense: RS 5,000
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  DATA SYNC - Real-time                                                      │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+    DEVICE A                    FIRESTORE                    DEVICE B
+       │                            │                            │
+       │  Add Expense RS 3,000      │                            │
+       ├───────────────────────────>│                            │
+       │                            │                            │
+       │                            │  Real-time listener        │
+       │                            ├──────────────────────────> │
+       │                            │                            │
+       │                            │                   ✅ Shows RS 3,000
+       │                            │                            │
+       │                            │  Add Category "Transport"  │
+       │                            │<───────────────────────────┤
+       │                            │                            │
+       │  Real-time listener        │                            │
+       │<───────────────────────────┤                            │
+       │                            │                            │
+  ✅ Shows "Transport"              │                            │
+       │                            │                            │
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  FIRESTORE DATA STRUCTURE                                                   │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+    users (collection)
+    └── 1784098728075 (document) ← Same userId on both devices
+        ├── budgetCycleStartDay: 25
+        ├── currency: "LKR"
+        ├── monthlyAllocation: 170000
+        └── categories (subcollection)
+            ├── cat_001
+            │   └── name: "Food"
+            └── cat_002
+                └── name: "Transport"
+
+    expenses (collection)
+    ├── exp_001
+    │   ├── userId: "1784098728075" ← Filter by this
+    │   ├── amount: 5000
+    │   └── categoryId: "cat_001"
+    └── exp_002
+        ├── userId: "1784098728075"
+        ├── amount: 3000
+        └── categoryId: "cat_001"
+
+    savings (collection)
+    └── sav_001
+        ├── userId: "1784098728075" ← Filter by this
+        ├── month: "2026-07"
+        └── amount: 10000
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  KEY COMPONENTS                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+    ┌────────────────────────────────────────┐
+    │ DevicePairingService                   │
+    ├────────────────────────────────────────┤
+    │ + generatePairingCode()                │  Returns userId for QR
+    │ + pairWithCode(scannedUserId)          │  Pairs device with userId
+    │ + isPairedDevice()                     │  Checks if paired
+    │ + unpairDevice()                       │  Resets device
+    └────────────────────────────────────────┘
+
+    ┌────────────────────────────────────────┐
+    │ QrPairDeviceScreen                     │
+    ├────────────────────────────────────────┤
+    │ + Displays QR code                     │
+    │ + Shows pairing instructions           │
+    │ + Security warnings                    │
+    └────────────────────────────────────────┘
+
+    ┌────────────────────────────────────────┐
+    │ QrScanScreen                           │
+    ├────────────────────────────────────────┤
+    │ + Camera scanner                       │
+    │ + QR code detection                    │
+    │ + Pairing validation                   │
+    │ + Error handling                       │
+    └────────────────────────────────────────┘
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  SECURITY MODEL                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+    Device A                 Device B                 Device C
+       │                        │                        │
+       ├─ Fingerprint 👆        ├─ Fingerprint 👆        ├─ Fingerprint 👆
+       ├─ userId: 1784...       ├─ userId: 1784...       ├─ userId: 1784...
+       │                        │                        │
+       └────────────────┬───────┴────────────────┬───────┘
+                        │                        │
+                        └──────────┬─────────────┘
+                                   │
+                            [Shared Data]
+                        Firestore Real-time Sync
+
+    ✅ Each device: Independent fingerprint authentication
+    ✅ Shared data: Same userId = same Firestore documents
+    ✅ Privacy: QR code contains only userId (no sensitive data)
+    ⚠️  Warning: Anyone with QR can access data (keep private!)
