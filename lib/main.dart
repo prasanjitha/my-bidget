@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 
@@ -105,6 +106,11 @@ class MyApp extends StatelessWidget {
                 elevation: 0,
                 backgroundColor: Color(0xFF2196F3),
                 foregroundColor: Colors.white,
+                systemOverlayStyle: SystemUiOverlayStyle(
+                  statusBarColor: Colors.transparent,
+                  statusBarIconBrightness: Brightness.light,
+                  statusBarBrightness: Brightness.dark,
+                ),
               ),
               floatingActionButtonTheme: const FloatingActionButtonThemeData(
                 backgroundColor: Color(0xFF2196F3),
@@ -131,6 +137,11 @@ class MyApp extends StatelessWidget {
                 centerTitle: true,
                 elevation: 0,
                 backgroundColor: Color(0xFF1E1E1E),
+                systemOverlayStyle: SystemUiOverlayStyle(
+                  statusBarColor: Colors.transparent,
+                  statusBarIconBrightness: Brightness.light,
+                  statusBarBrightness: Brightness.dark,
+                ),
               ),
               scaffoldBackgroundColor: const Color(0xFF121212),
               cardTheme: const CardThemeData(
@@ -141,7 +152,21 @@ class MyApp extends StatelessWidget {
                 foregroundColor: Colors.white,
               ),
             ),
-            home: const AuthenticationWrapper(),
+            home: Builder(
+              builder: (context) {
+                final isDarkMode = settings.isDarkMode;
+                return AnnotatedRegion<SystemUiOverlayStyle>(
+                  value: SystemUiOverlayStyle(
+                    statusBarColor: Colors.transparent,
+                    statusBarIconBrightness: isDarkMode ? Brightness.light : Brightness.dark,
+                    statusBarBrightness: isDarkMode ? Brightness.dark : Brightness.light,
+                    systemNavigationBarColor: isDarkMode ? const Color(0xFF121212) : Colors.white,
+                    systemNavigationBarIconBrightness: isDarkMode ? Brightness.light : Brightness.dark,
+                  ),
+                  child: const AuthenticationWrapper(),
+                );
+              },
+            ),
           );
         },
       ),
