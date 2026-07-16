@@ -18,8 +18,6 @@ class SettingsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings'),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
         elevation: 0,
       ),
       body: Consumer2<HomeProvider, SettingsProvider>(
@@ -43,6 +41,8 @@ class SettingsScreen extends StatelessWidget {
               const SizedBox(height: 8),
               _buildCategoriesCard(context),
               const SizedBox(height: 8),
+              _buildSpecialEventsCard(context),
+              const SizedBox(height: 8),
               _buildExportReportCard(context),
               const SizedBox(height: 24),
               _buildLogoutButton(context),
@@ -55,7 +55,6 @@ class SettingsScreen extends StatelessWidget {
 
   Widget _buildDarkModeCard(BuildContext context, SettingsProvider settingsProvider) {
     return Card(
-      color: Colors.white,
       elevation: 8,
       shadowColor: Colors.black.withValues(alpha: 0.3),
       child: ListTile(
@@ -74,7 +73,6 @@ class SettingsScreen extends StatelessWidget {
   Widget _buildCurrencyCard(BuildContext context, HomeProvider homeProvider, appSettings) {
     final settingsProvider = Provider.of<SettingsProvider>(context, listen: false);
     return Card(
-      color: Colors.white,
       elevation: 8,
       shadowColor: Colors.black.withValues(alpha: 0.3),
       child: ListTile(
@@ -91,7 +89,6 @@ class SettingsScreen extends StatelessWidget {
 
   Widget _buildMonthlyAllocationCard(BuildContext context, HomeProvider homeProvider, appSettings) {
     return Card(
-      color: Colors.white,
       elevation: 8,
       shadowColor: Colors.black.withValues(alpha: 0.3),
       child: ListTile(
@@ -107,7 +104,6 @@ class SettingsScreen extends StatelessWidget {
 
   Widget _buildProfileNameCard(BuildContext context, HomeProvider homeProvider, String? currentName) {
     return Card(
-      color: Colors.white,
       elevation: 8,
       shadowColor: Colors.black.withValues(alpha: 0.3),
       child: ListTile(
@@ -127,7 +123,6 @@ class SettingsScreen extends StatelessWidget {
     final cycleText = _getCycleDisplayText(startDay);
 
     return Card(
-      color: Colors.white,
       elevation: 8,
       shadowColor: Colors.black.withValues(alpha: 0.3),
       child: ListTile(
@@ -144,7 +139,6 @@ class SettingsScreen extends StatelessWidget {
 
   Widget _buildCategoriesCard(BuildContext context) {
     return Card(
-      color: Colors.white,
       elevation: 8,
       shadowColor: Colors.black.withValues(alpha: 0.3),
       child: ListTile(
@@ -163,9 +157,24 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildSpecialEventsCard(BuildContext context) {
+    return Card(
+      elevation: 8,
+      shadowColor: Colors.black.withValues(alpha: 0.3),
+      child: ListTile(
+        leading: const Icon(Icons.event),
+        title: const Text('Special Events'),
+        subtitle: const Text('Manage special events'),
+        trailing: const Icon(Icons.chevron_right),
+        onTap: () {
+          ToastUtils.showInfo(context, 'Special Events coming soon!');
+        },
+      ),
+    );
+  }
+
   Widget _buildExportReportCard(BuildContext context) {
     return Card(
-      color: Colors.white,
       elevation: 8,
       shadowColor: Colors.black.withValues(alpha: 0.3),
       child: ListTile(
@@ -435,12 +444,10 @@ class SettingsScreen extends StatelessWidget {
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Flexible(
-                  child: Text(
-                    'Budget Cycle Start',
-                    style: TextStyle(fontSize: 18),
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                const Text(
+                  'Budget Cycle Start',
+                  style: TextStyle(fontSize: 18),
+                  overflow: TextOverflow.ellipsis,
                 ),
                 IconButton(
                   icon: const Icon(Icons.close),
@@ -450,8 +457,8 @@ class SettingsScreen extends StatelessWidget {
                 ),
               ],
             ),
-            content: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 400),
+            content: SizedBox(
+              width: double.maxFinite,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,

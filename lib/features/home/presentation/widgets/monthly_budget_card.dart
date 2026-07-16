@@ -23,7 +23,7 @@ class MonthlyBudgetCard extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -63,7 +63,6 @@ class MonthlyBudgetCard extends StatelessWidget {
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
                         letterSpacing: 0.2,
-                        color: Color(0xFF333333),
                         fontFamily: 'Roboto',
                       ),
                     ),
@@ -93,7 +92,7 @@ class MonthlyBudgetCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.w700,
-                    color: budget > 0 ? const Color(0xFF000000) : const Color(0xFF999999),
+                    color: budget > 0 ? Theme.of(context).textTheme.bodyLarge?.color : const Color(0xFF999999),
                     letterSpacing: -0.5,
                     fontFamily: 'Roboto',
                   ),

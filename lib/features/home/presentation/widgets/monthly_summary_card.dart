@@ -63,10 +63,10 @@ class MonthlySummaryCard extends StatelessWidget {
             _buildRow(
               'Total Spent',
               totalSpent,
-              isOverBudget ? Colors.red : Colors.black,
+              isOverBudget ? Colors.red : (Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black),
             ),
             const SizedBox(height: 12),
-            _buildRow('Allocated Budget', allocated, Colors.grey.shade700),
+            _buildRow('Allocated Budget', allocated, Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey.shade700),
             const Divider(height: 24),
             _buildRow(
               'Remaining',

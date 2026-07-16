@@ -41,23 +41,20 @@ class _SummaryScreenState extends State<SummaryScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
         elevation: 0,
         title: const Text(
           'Summary',
           style: TextStyle(
             fontWeight: FontWeight.w700,
             fontFamily: 'Roboto',
-            color: Color(0xFF333333),
           ),
         ),
         centerTitle: true,
         bottom: TabBar(
           controller: _tabController,
-          labelColor: Colors.blue.shade700,
-          unselectedLabelColor: Colors.grey.shade600,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white70,
           labelStyle: const TextStyle(
             fontWeight: FontWeight.w700,
             fontSize: 15,
@@ -68,7 +65,7 @@ class _SummaryScreenState extends State<SummaryScreen>
             fontSize: 15,
             fontFamily: 'Roboto',
           ),
-          indicatorColor: Colors.blue.shade700,
+          indicatorColor: Colors.white,
           indicatorWeight: 3,
           tabs: const [
             Tab(text: 'Daily'),

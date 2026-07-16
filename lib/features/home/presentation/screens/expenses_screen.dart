@@ -54,9 +54,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
     final groupedExpenses = _groupExpensesByDate(filteredExpenses);
 
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
         elevation: 0,
         title: _isSearching
             ? TextField(
@@ -67,7 +65,6 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                   border: InputBorder.none,
                   hintStyle: TextStyle(color: Colors.grey),
                 ),
-                style: const TextStyle(color: Colors.black87),
                 onChanged: (value) {
                   setState(() {
                     _searchQuery = value;
@@ -79,10 +76,8 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                 style: TextStyle(
                   fontWeight: FontWeight.w700,
                   fontFamily: 'Roboto',
-                  color: Color(0xFF333333),
                 ),
               ),
-        iconTheme: const IconThemeData(color: Color(0xFF333333)),
         actions: [
           if (_isSearching)
             IconButton(
@@ -285,7 +280,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -330,7 +325,6 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                       fontFamily: 'Roboto',
-                      color: Color(0xFF333333),
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -350,7 +344,6 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                     fontWeight: FontWeight.w700,
                     fontSize: 18,
                     fontFamily: 'Roboto',
-                    color: Color(0xFF000000),
                     letterSpacing: -0.5,
                   ),
                 ),

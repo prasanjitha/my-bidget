@@ -34,28 +34,32 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         onPressed: () => _showAddExpenseBottomSheet(context),
         elevation: 4,
         backgroundColor: Theme.of(context).primaryColor,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: const CircleBorder(),
         child: const Icon(Icons.add, size: 32),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
-              blurRadius: 10,
-              offset: const Offset(0, -2),
-            ),
-          ],
+          color: Theme.of(context).colorScheme.surface,
+          boxShadow: Theme.of(context).brightness == Brightness.light
+              ? [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.1),
+                    blurRadius: 10,
+                    offset: const Offset(0, -2),
+                  ),
+                ]
+              : null,
+          border: Theme.of(context).brightness == Brightness.dark
+              ? Border(top: BorderSide(color: Colors.white.withValues(alpha: 0.05), width: 1))
+              : null,
         ),
         child: BottomAppBar(
           shape: const CircularNotchedRectangle(),
           notchMargin: 8.0,
           height: 68,
           elevation: 0,
-          color: Colors.white,
+          color: Colors.transparent,
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,

@@ -26,7 +26,7 @@ class _CategoryBudgetCardState extends State<CategoryBudgetCard> {
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
