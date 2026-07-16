@@ -52,14 +52,13 @@ class HomeProvider with ChangeNotifier {
     return _appSettings.monthlyAllocation - totalSpent;
   }
 
-  void initialize(String userId) {
+  void initialize(String? userId) {
     _userId = userId;
     _loadData();
     _repository.initializeDefaultCategories();
   }
 
   void _loadData() {
-    if (_userId == null) return;
 
     // Listen to app settings (shared for all users)
     _appSettingsSubscription?.cancel();
@@ -139,15 +138,12 @@ class HomeProvider with ChangeNotifier {
     required String description,
     required DateTime date,
   }) async {
-    if (_userId == null) throw Exception('User not logged in');
-
     final budgetCycle = _repository.getBudgetCycleForDate(
       date,
       _appSettings.budgetCycleStartDay,
     );
 
     await _repository.addExpense(
-      userId: _userId!,
       categoryId: categoryId,
       amount: amount,
       description: description,
@@ -167,7 +163,6 @@ class HomeProvider with ChangeNotifier {
     required String description,
     required DateTime date,
   }) async {
-    if (_userId == null) throw Exception('User not logged in');
 
     final budgetCycle = _repository.getBudgetCycleForDate(
       date,
@@ -240,9 +235,7 @@ class HomeProvider with ChangeNotifier {
     required String month,
     required double amount,
   }) async {
-    if (_userId == null) throw Exception('User not logged in');
     return await _repository.addSavings(
-      userId: _userId!,
       month: month,
       amount: amount,
       currency: _appSettings.currency,
@@ -273,10 +266,9 @@ class HomeProvider with ChangeNotifier {
     required DateTime endDate,
     required double budget,
   }) async {
-    if (_userId == null) throw Exception('User not logged in');
     final event = SpecialEvent(
       id: '',
-      userId: _userId!,
+      userId: '',
       title: title,
       startDate: startDate,
       endDate: endDate,
@@ -315,11 +307,10 @@ class HomeProvider with ChangeNotifier {
     required double amount,
     required DateTime date,
   }) async {
-    if (_userId == null) throw Exception('User not logged in');
     final expense = SpecialEventExpense(
       id: '',
       eventId: eventId,
-      userId: _userId!,
+      userId: '',
       title: title,
       amount: amount,
       date: date,

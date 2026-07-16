@@ -22,7 +22,7 @@ class Expense {
   factory Expense.fromMap(Map<String, dynamic> map, String id) {
     return Expense(
       id: id,
-      userId: map['userId'] as String,
+      userId: map['userId'] as String? ?? '',
       categoryId: map['categoryId'] as String,
       amount: (map['amount'] as num).toDouble(),
       description: map['description'] as String,

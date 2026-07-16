@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
-import '../../../auth/presentation/screens/qr_pair_device_screen.dart';
 import '../providers/home_provider.dart';
 import '../providers/settings_provider.dart';
 import '../../../../services/pdf_service.dart';

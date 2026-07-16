@@ -22,7 +22,7 @@ class Savings {
   factory Savings.fromMap(Map<String, dynamic> map, String id) {
     return Savings(
       id: id,
-      userId: map['userId'] as String,
+      userId: map['userId'] as String? ?? '',
       month: map['month'] as String,
       amount: (map['amount'] as num).toDouble(),
       currency: map['currency'] as String,

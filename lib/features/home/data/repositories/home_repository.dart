@@ -302,7 +302,6 @@ class HomeRepository {
   }
 
   Future<String> addExpense({
-    required String userId,
     required String categoryId,
     required double amount,
     required String description,
@@ -310,7 +309,6 @@ class HomeRepository {
     required String budgetCycle,
   }) async {
     final docRef = await _firestore.collection('expenses').add({
-      'userId': userId,
       'categoryId': categoryId,
       'amount': amount,
       'description': description,
@@ -446,7 +444,6 @@ class HomeRepository {
   }
 
   Future<String> addSavings({
-    required String userId,
     required String month,
     required double amount,
     required String currency,
@@ -462,7 +459,6 @@ class HomeRepository {
     }
 
     final docRef = await _firestore.collection('savings').add({
-      'userId': userId,
       'month': month,
       'amount': amount,
       'currency': currency,
