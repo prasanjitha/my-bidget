@@ -16,7 +16,6 @@ class CategoryBudgetCard extends StatefulWidget {
 
 class _CategoryBudgetCardState extends State<CategoryBudgetCard> {
   bool _isExpanded = false;
-  final Map<String, double> _categorySpent = {};
 
   @override
   Widget build(BuildContext context) {
@@ -131,17 +130,7 @@ class _CategoryBudgetCardState extends State<CategoryBudgetCard> {
     HomeProvider provider,
     int index,
   ) {
-    if (!_categorySpent.containsKey(category.id)) {
-      provider.getCategorySpent(category.id).then((spent) {
-        if (mounted) {
-          setState(() {
-            _categorySpent[category.id] = spent;
-          });
-        }
-      });
-    }
-
-    final spent = _categorySpent[category.id] ?? 0.0;
+    final spent = provider.getCategorySpent(category.id);
     final allocated = category.allocatedBudget;
     final remaining = allocated - spent;
 

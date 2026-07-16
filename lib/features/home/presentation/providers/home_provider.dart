@@ -128,8 +128,10 @@ class HomeProvider with ChangeNotifier {
     await _repository.updateCategoryBudget(categoryId, budget);
   }
 
-  Future<double> getCategorySpent(String categoryId) async {
-    return await _repository.getCategorySpent(categoryId, currentBudgetCycle);
+  double getCategorySpent(String categoryId) {
+    return _expenses
+        .where((e) => e.categoryId == categoryId)
+        .fold(0.0, (sum, expense) => sum + expense.amount);
   }
 
   Future<void> addExpense({
