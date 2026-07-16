@@ -159,6 +159,8 @@ class AuthenticationWrapper extends StatefulWidget {
 
 class _AuthenticationWrapperState extends State<AuthenticationWrapper>
     with WidgetsBindingObserver {
+  bool _initializedHomeForSession = false;
+
   @override
   void initState() {
     super.initState();
@@ -208,8 +210,17 @@ class _AuthenticationWrapperState extends State<AuthenticationWrapper>
 
         // Navigate based on auth state
         if (authProvider.isAuthenticated) {
+          if (!_initializedHomeForSession) {
+            _initializedHomeForSession = true;
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              context.read<HomeProvider>().initialize(authProvider.userId);
+            });
+          }
           return const MainNavigationScreen();
         }
+
+        // Reset the initialization flag when not authenticated
+        _initializedHomeForSession = false;
 
         // Show biometric login for all other states
         return const BiometricLoginScreen();

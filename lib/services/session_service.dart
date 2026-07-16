@@ -6,7 +6,7 @@ import '../core/constants/app_constants.dart';
 /// Implements AUTH-003 requirements for session management
 class SessionService with WidgetsBindingObserver {
   bool _isInBackground = false;
-  bool _requiresReauth = false;
+  bool _requiresReauth = true;
   DateTime? _backgroundTime;
 
   // Singleton pattern
