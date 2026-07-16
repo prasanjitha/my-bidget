@@ -128,11 +128,16 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     );
   }
 
-  void _showAddExpenseBottomSheet(BuildContext context) {
-    showModalBottomSheet(
+  void _showAddExpenseBottomSheet(BuildContext context) async {
+    await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       builder: (context) => const AddExpenseBottomSheet(),
     );
+
+    // Force refresh after bottom sheet closes to ensure data is updated
+    if (mounted) {
+      setState(() {});
+    }
   }
 }

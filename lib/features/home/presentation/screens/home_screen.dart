@@ -21,13 +21,17 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final authProvider = context.read<AuthProvider>();
-      final homeProvider = context.read<HomeProvider>();
-
-      if (authProvider.userId != null) {
-        homeProvider.initialize(authProvider.userId!);
-      }
+      _initializeData();
     });
+  }
+
+  void _initializeData() {
+    final authProvider = context.read<AuthProvider>();
+    final homeProvider = context.read<HomeProvider>();
+
+    if (authProvider.userId != null) {
+      homeProvider.initialize(authProvider.userId!);
+    }
   }
 
   @override
@@ -36,12 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: Colors.white,
       body: RefreshIndicator(
         onRefresh: () async {
-          final authProvider = context.read<AuthProvider>();
-          final homeProvider = context.read<HomeProvider>();
-
-          if (authProvider.userId != null) {
-            homeProvider.initialize(authProvider.userId!);
-          }
+          _initializeData();
         },
         child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),

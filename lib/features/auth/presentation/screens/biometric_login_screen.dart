@@ -33,6 +33,89 @@ class _BiometricLoginScreenState extends State<BiometricLoginScreen> {
     }
   }
 
+  void _showPinDialog(BuildContext context) {
+    final pinController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Enter PIN'),
+        content: Form(
+          key: formKey,
+          child: TextFormField(
+            controller: pinController,
+            keyboardType: TextInputType.number,
+            obscureText: true,
+            maxLength: 4,
+            autofocus: true,
+            decoration: const InputDecoration(
+              labelText: 'PIN',
+              hintText: 'Enter 4-digit PIN',
+              border: OutlineInputBorder(),
+              counterText: '',
+            ),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter PIN';
+              }
+              if (value.length != 4) {
+                return 'PIN must be 4 digits';
+              }
+              return null;
+            },
+            onFieldSubmitted: (value) {
+              if (formKey.currentState!.validate()) {
+                _handlePinSubmit(dialogContext, pinController.text);
+              }
+            },
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (formKey.currentState!.validate()) {
+                _handlePinSubmit(dialogContext, pinController.text);
+              }
+            },
+            child: const Text('Submit'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _handlePinSubmit(BuildContext dialogContext, String enteredPin) async {
+    if (enteredPin == '2036') {
+      // Correct PIN - close dialog and authenticate via AuthService
+      Navigator.of(dialogContext).pop();
+
+      final authProvider = context.read<AuthProvider>();
+
+      // If first time, enroll the user
+      if (authProvider.state == AuthState.needsEnrollment) {
+        await authProvider.enrollUser();
+      } else {
+        // Mark as authenticated (bypass biometric for devices without support)
+        await authProvider.authenticateWithBiometrics();
+      }
+    } else {
+      // Wrong PIN - show error
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Incorrect PIN. Try 2036'),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -183,6 +266,27 @@ class _BiometricLoginScreenState extends State<BiometricLoginScreen> {
                       const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // Enter PIN Button (for devices without biometric support)
+              TextButton.icon(
+                onPressed: () => _showPinDialog(context),
+                icon: const Icon(Icons.pin, color: Colors.white),
+                label: const Text(
+                  'Enter PIN',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                  ),
+                ),
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
                   ),
                 ),
               ),

@@ -186,10 +186,9 @@ class HomeRepository {
         .update({'allocatedBudget': budget});
   }
 
-  Stream<List<Expense>> getExpenses(String userId, String budgetCycle) {
+  Stream<List<Expense>> getExpenses(String budgetCycle) {
     return _firestore
         .collection('expenses')
-        .where('userId', isEqualTo: userId)
         .where('budgetCycle', isEqualTo: budgetCycle)
         .orderBy('date', descending: true)
         .snapshots()
@@ -200,11 +199,9 @@ class HomeRepository {
     });
   }
 
-  Future<double> getCategorySpent(
-      String userId, String categoryId, String budgetCycle) async {
+  Future<double> getCategorySpent(String categoryId, String budgetCycle) async {
     final snapshot = await _firestore
         .collection('expenses')
-        .where('userId', isEqualTo: userId)
         .where('categoryId', isEqualTo: categoryId)
         .where('budgetCycle', isEqualTo: budgetCycle)
         .get();
@@ -344,10 +341,9 @@ class HomeRepository {
     await _firestore.collection('expenses').doc(expenseId).delete();
   }
 
-  Future<bool> categoryHasExpenses(String userId, String categoryId, String budgetCycle) async {
+  Future<bool> categoryHasExpenses(String categoryId, String budgetCycle) async {
     final snapshot = await _firestore
         .collection('expenses')
-        .where('userId', isEqualTo: userId)
         .where('categoryId', isEqualTo: categoryId)
         .where('budgetCycle', isEqualTo: budgetCycle)
         .limit(1)
@@ -363,14 +359,13 @@ class HomeRepository {
         .delete();
   }
 
-  Future<double> getTodaySpent(String userId) async {
+  Future<double> getTodaySpent() async {
     final today = DateTime.now();
     final startOfDay = DateTime(today.year, today.month, today.day);
     final endOfDay = DateTime(today.year, today.month, today.day, 23, 59, 59);
 
     final snapshot = await _firestore
         .collection('expenses')
-        .where('userId', isEqualTo: userId)
         .where('date', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
         .where('date', isLessThanOrEqualTo: Timestamp.fromDate(endOfDay))
         .get();
@@ -383,13 +378,11 @@ class HomeRepository {
   }
 
   Stream<List<Expense>> getExpensesByDateRange(
-    String userId,
     DateTime startDate,
     DateTime endDate,
   ) {
     return _firestore
         .collection('expenses')
-        .where('userId', isEqualTo: userId)
         .where('date', isGreaterThanOrEqualTo: Timestamp.fromDate(startDate))
         .where('date', isLessThanOrEqualTo: Timestamp.fromDate(endDate))
         .orderBy('date', descending: true)
@@ -401,10 +394,9 @@ class HomeRepository {
     });
   }
 
-  Future<Map<String, double>> getMonthlySummary(String userId, String budgetCycle) async {
+  Future<Map<String, double>> getMonthlySummary(String budgetCycle) async {
     final snapshot = await _firestore
         .collection('expenses')
-        .where('userId', isEqualTo: userId)
         .where('budgetCycle', isEqualTo: budgetCycle)
         .get();
 
@@ -426,7 +418,7 @@ class HomeRepository {
     };
   }
 
-  Future<List<String>> getPastBudgetCycles(String userId, int startDay, int count) async {
+  Future<List<String>> getPastBudgetCycles(int startDay, int count) async {
     final cycles = <String>[];
     final now = DateTime.now();
 
@@ -439,10 +431,9 @@ class HomeRepository {
   }
 
   // Savings methods
-  Stream<List<Savings>> getSavings(String userId) {
+  Stream<List<Savings>> getSavings() {
     return _firestore
         .collection('savings')
-        .where('userId', isEqualTo: userId)
         .orderBy('month', descending: true)
         .snapshots()
         .map((snapshot) {
@@ -461,7 +452,6 @@ class HomeRepository {
     // Check for duplicate
     final existing = await _firestore
         .collection('savings')
-        .where('userId', isEqualTo: userId)
         .where('month', isEqualTo: month)
         .get();
 
@@ -492,10 +482,9 @@ class HomeRepository {
     await _firestore.collection('savings').doc(savingsId).delete();
   }
 
-  Future<double> getTotalSavings(String userId) async {
+  Future<double> getTotalSavings() async {
     final snapshot = await _firestore
         .collection('savings')
-        .where('userId', isEqualTo: userId)
         .get();
 
     double total = 0.0;

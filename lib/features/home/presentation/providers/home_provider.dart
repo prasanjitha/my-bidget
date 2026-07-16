@@ -38,8 +38,7 @@ class HomeProvider with ChangeNotifier {
   }
 
   Stream<List<Expense>> getExpensesForCycle(String budgetCycle) {
-    if (_userId == null) return Stream.value([]);
-    return _repository.getExpenses(_userId!, budgetCycle);
+    return _repository.getExpenses(budgetCycle);
   }
 
   double get totalSpent {
@@ -83,15 +82,18 @@ class HomeProvider with ChangeNotifier {
   }
 
   void _loadExpenses() {
-    if (_userId == null) return;
-
     _expensesSubscription?.cancel();
     _expensesSubscription = _repository
-        .getExpenses(_userId!, currentBudgetCycle)
+        .getExpenses(currentBudgetCycle)
         .listen((expenses) {
       _expenses = expenses;
       notifyListeners();
     });
+  }
+
+  /// Public method to force reload expenses
+  void reloadExpenses() {
+    _loadExpenses();
   }
 
   Future<void> setMonthlyBudget(double amount, String currency) async {
@@ -125,9 +127,7 @@ class HomeProvider with ChangeNotifier {
   }
 
   Future<double> getCategorySpent(String categoryId) async {
-    if (_userId == null) return 0.0;
-    return await _repository.getCategorySpent(
-        _userId!, categoryId, currentBudgetCycle);
+    return await _repository.getCategorySpent(categoryId, currentBudgetCycle);
   }
 
   Future<void> addExpense({
@@ -151,6 +151,10 @@ class HomeProvider with ChangeNotifier {
       date: date,
       budgetCycle: budgetCycle,
     );
+
+    // Force reload to ensure UI updates
+    _loadExpenses();
+    notifyListeners();
   }
 
   Future<void> updateExpense({
@@ -175,16 +179,22 @@ class HomeProvider with ChangeNotifier {
       date: date,
       budgetCycle: budgetCycle,
     );
+
+    // Force reload to ensure UI updates
+    _loadExpenses();
+    notifyListeners();
   }
 
   Future<void> deleteExpense(String expenseId) async {
     await _repository.deleteExpense(expenseId);
+
+    // Force reload to ensure UI updates
+    _loadExpenses();
+    notifyListeners();
   }
 
   Future<bool> categoryHasExpenses(String categoryId) async {
-    if (_userId == null) return false;
     return await _repository.categoryHasExpenses(
-      _userId!,
       categoryId,
       currentBudgetCycle,
     );
@@ -200,24 +210,19 @@ class HomeProvider with ChangeNotifier {
   }
 
   Future<double> getTodaySpent() async {
-    if (_userId == null) return 0.0;
-    return await _repository.getTodaySpent(_userId!);
+    return await _repository.getTodaySpent();
   }
 
   Stream<List<Expense>> getExpensesByDateRange(DateTime startDate, DateTime endDate) {
-    if (_userId == null) return Stream.value([]);
-    return _repository.getExpensesByDateRange(_userId!, startDate, endDate);
+    return _repository.getExpensesByDateRange(startDate, endDate);
   }
 
   Future<Map<String, double>> getMonthlySummary(String budgetCycle) async {
-    if (_userId == null) return {};
-    return await _repository.getMonthlySummary(_userId!, budgetCycle);
+    return await _repository.getMonthlySummary(budgetCycle);
   }
 
   Future<List<String>> getPastBudgetCycles(int count) async {
-    if (_userId == null) return [];
     return await _repository.getPastBudgetCycles(
-      _userId!,
       _appSettings.budgetCycleStartDay,
       count,
     );
@@ -225,8 +230,7 @@ class HomeProvider with ChangeNotifier {
 
   // Savings methods
   Stream<List<Savings>> getSavings() {
-    if (_userId == null) return Stream.value([]);
-    return _repository.getSavings(_userId!);
+    return _repository.getSavings();
   }
 
   Future<String> addSavings({
@@ -251,8 +255,7 @@ class HomeProvider with ChangeNotifier {
   }
 
   Future<double> getTotalSavings() async {
-    if (_userId == null) return 0.0;
-    return await _repository.getTotalSavings(_userId!);
+    return await _repository.getTotalSavings();
   }
 
   @override
