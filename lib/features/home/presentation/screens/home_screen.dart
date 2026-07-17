@@ -8,6 +8,7 @@ import '../widgets/category_budget_card.dart';
 import '../widgets/total_spend_card.dart';
 import '../widgets/remaining_balance_card.dart';
 import '../widgets/monthly_overview_graph.dart';
+import '../../../../core/utils/toast_utils.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -17,6 +18,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  bool _isRefreshing = false;
+
   @override
   void initState() {
     super.initState();
@@ -58,6 +61,37 @@ class _HomeScreenState extends State<HomeScreen> {
             SizedBox(height: 100),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton.small(
+        heroTag: 'home_refresh_fab',
+        onPressed: _isRefreshing
+            ? null
+            : () async {
+                setState(() {
+                  _isRefreshing = true;
+                });
+                _initializeData();
+                await Future.delayed(const Duration(milliseconds: 1200));
+                if (!mounted) return;
+                setState(() {
+                  _isRefreshing = false;
+                });
+                if (context.mounted) {
+                  ToastUtils.showSuccess(context, 'Data refreshed successfully');
+                }
+              },
+        backgroundColor: Theme.of(context).primaryColor,
+        foregroundColor: Colors.white,
+        child: _isRefreshing
+            ? const SizedBox(
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              )
+            : const Icon(Icons.refresh_rounded, size: 20),
       ),
     );
   }
